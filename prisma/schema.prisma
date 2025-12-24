@@ -1,0 +1,37 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  assessments Assessment[]
+}
+
+model Assessment {
+  id          Int      @id @default(autoincrement())
+  company     String
+  consultant  String
+  createdAt   DateTime @default(now())
+  responses   Json
+  analyses    Analysis[]
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      Int?
+}
+
+model Analysis {
+  id           Int      @id @default(autoincrement())
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+  assessmentId Int
+  output       Json
+  pdfUrl       String?
+  status       String
+  createdAt    DateTime @default(now())
+}
